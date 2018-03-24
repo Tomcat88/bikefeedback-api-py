@@ -1,0 +1,4 @@
+*.log
+*.py[cd]
+*~
+__pycache__
