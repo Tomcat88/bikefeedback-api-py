@@ -1,4 +1,6 @@
 *.log
 *.py[cd]
 *~
+test_map.html
+test_map_files
 __pycache__

@@ -1,25 +1,28 @@
 from flask import Flask
-import logging
+import logging as log
 import scraper
-logFormatter = logging.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
+logFormatter = log.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def hello():
-    scraper.scrape_bikes()
+    stations = scraper.scrape_bikes()
+    for s in stations:
+        log.info(s)
+
     return "Hello World"
 
 
 def configure_logger():
-    rootLogger = logging.getLogger()
+    rootLogger = log.getLogger()
 
-    fileHandler = logging.FileHandler("bikefeedback.log")
+    fileHandler = log.FileHandler("bikefeedback.log")
     fileHandler.setFormatter(logFormatter)
     rootLogger.addHandler(fileHandler)
 
-    consoleHandler = logging.StreamHandler()
+    consoleHandler = log.StreamHandler()
     consoleHandler.setFormatter(logFormatter)
     rootLogger.addHandler(consoleHandler)
 
