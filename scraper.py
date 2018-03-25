@@ -1,8 +1,10 @@
 import urllib.request
-from collections import namedtuple
 import logging as log
 import os
 import re
+
+from utils import timed_cache
+from collections import namedtuple
 
 DEVELOPMENT = os.getenv('BIKE_FEEDBACK_DEV', "True") == "True"
 page_name = os.environ.get('BIKE_PAGE')
@@ -42,6 +44,7 @@ def get_dev_page():
         return f.read()
 
 
+@timed_cache(seconds=120)
 def scrape_bikes():
     log.info("Scraping bikes...")
     content = get_dev_page() if DEVELOPMENT else get_bike_page()
@@ -67,6 +70,5 @@ def scrape_bikes():
                                 int(tds[0]),
                                 int(tds[2]),
                                 int(tds[1])))
-        break
 
     return stations
