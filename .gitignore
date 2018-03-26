@@ -1,6 +1,7 @@
 *.log
 *.py[cd]
 *~
+*.cfg
 test_map.html
 test_map_files
 __pycache__

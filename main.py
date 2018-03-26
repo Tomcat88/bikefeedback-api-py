@@ -1,6 +1,10 @@
+from periodic import periodic
 from flask import Flask
 import logging as log
 import scraper
+import sched
+import time
+
 logFormatter = log.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
 
 app = Flask(__name__)
@@ -29,6 +33,17 @@ def configure_logger():
     rootLogger.setLevel("DEBUG")
 
 
+def configure_scheduler():
+    s = sched.scheduler(time.time, time.sleep)
+    periodic(s, 10, fetch_updates)
+    s.run()
+
+
+def fetch_updates():
+    log.info("Fetching updates")
+
+
 if __name__ == "__main__":
     configure_logger()
-    app.run()
+    configure_scheduler()
+#    app.run()
