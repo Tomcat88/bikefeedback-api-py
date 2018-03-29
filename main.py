@@ -1,9 +1,11 @@
 from periodic import periodic
 from flask import Flask
 import logging as log
+import telegramclient
 import scraper
 import sched
 import time
+import json
 
 logFormatter = log.Formatter("%(asctime)s [%(levelname)-5.5s] %(message)s")
 
@@ -41,6 +43,8 @@ def configure_scheduler():
 
 def fetch_updates():
     log.info("Fetching updates")
+    updates = telegramclient.get_updates()
+    log.info(updates)
 
 
 if __name__ == "__main__":
