@@ -1,5 +1,6 @@
-from types import SimpleNamespace as Namespace
-import urllib
+import logging as log
+import urllib.request
+import urllib.parse
 import json
 import os
 
@@ -17,11 +18,25 @@ def get_updates():
         data=None
     )
     with urllib.request.urlopen(req) as resp:
-        updates = json.loads(resp.read(), object_hook=lambda d: Namespace(**d))
-        if updates.ok:
-            return updates.result
+        updates = json.loads(resp.read())
+        if updates["ok"]:
+            return updates["result"]
         else:
             raise Exception(
                 "Error while getting updates: (%d) %s" %
-                updates.error_code, updates.description
+                (updates["error_code"], updates["description"])
             )
+
+
+def send_message(user_id, message):
+    body = {
+        'chat_id': user_id,
+        'text': message
+    }
+    req = urllib.request.Request(
+        BASE_URL + 'sendMessage',
+        data=urllib.parse.urlencode(body).encode()
+    )
+    with urllib.request.urlopen(req) as resp:
+        jsonResponse = json.loads(resp.read())
+        log.info(jsonResponse)
