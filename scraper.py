@@ -13,14 +13,33 @@ MARKER_REGEX = "GoogleMap.addMarker\\((.*)\\);"
 TD_REGEX = "\<td\>(\d+)\<\/td\>"
 STRONG_REGEX = "\<strong\>(\d+) - .*\<\/strong\>"
 
-Station = namedtuple('Station', ['icon',
-                                 'lat',
-                                 'lng',
-                                 'code',
-                                 'name',
-                                 'bikes',
-                                 'ebikes',
-                                 'racks'])
+
+class Station(object):
+    """
+    Representation of the current state of a bike station
+    """
+
+    def __init__(self, icon, lat, lng,
+                 code, name, bikes,
+                 ebikes, racks):
+        self.icon = icon
+        self.lat = lat
+        self.lng = lng
+        self.code = code
+        self.name = name
+        self.bikes = bikes
+        self.ebikes = ebikes
+        self.racks = racks
+
+    def __str__(self):
+        return '''(%s) -- *%s*
+
+        Bikes: *%d*
+
+        eBikes: *%d*
+
+        Racks: *%d*''' % (self.code, self.name, self.bikes,
+                          self.ebikes, self.racks)
 
 
 def get_bike_page():
@@ -54,7 +73,7 @@ def scrape_bikes():
         return
     markers = re.findall(MARKER_REGEX, content)
     log.info("Found %s markers" % len(markers))
-    stations = []
+    stations = {}
     for m in markers:
         station = [s.replace("'", "")
                    .replace("\\r\\n", "")
@@ -62,13 +81,13 @@ def scrape_bikes():
         html = station[4].encode('utf-8').decode('unicode_escape')
         tds = re.findall(TD_REGEX, html)
         strong = re.search(STRONG_REGEX, html)
-        stations.append(Station(station[0],
-                                float(station[1]),
-                                float(station[2]),
-                                int(strong.group(1)),
-                                station[3],
-                                int(tds[0]),
-                                int(tds[2]),
-                                int(tds[1])))
+        stations[station[3]] = Station(station[0],
+                                       float(station[1]),
+                                       float(station[2]),
+                                       int(strong.group(1)),
+                                       station[3],
+                                       int(tds[0]),
+                                       int(tds[2]),
+                                       int(tds[1]))
 
     return stations
