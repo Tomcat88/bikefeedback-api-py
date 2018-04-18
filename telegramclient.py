@@ -24,7 +24,7 @@ def get_updates():
         data=None
     )
     with urllib.request.urlopen(req) as resp:
-        updates = json.loads(resp.read())
+        updates = json.loads(resp.read().decode('utf-8'))
         if updates["ok"]:
             return updates["result"]
         else:
@@ -46,7 +46,7 @@ def send_simple_message(user_id, message):
         data=urllib.parse.urlencode(body).encode()
     )
     with urllib.request.urlopen(req) as resp:
-        jsonResponse = json.loads(resp.read())
+        jsonResponse = json.loads(resp.read().decode('utf-8'))
         log.info(jsonResponse)
 
 
@@ -62,7 +62,7 @@ def send_location(user_id, location):
         data=urllib.parse.urlencode(body).encode()
     )
     with urllib.request.urlopen(req) as resp:
-        jsonResponse = json.loads(resp.read())
+        jsonResponse = json.loads(resp.read().decode('utf-8'))
         if jsonResponse["ok"]:
             return jsonResponse["result"]
         else:
@@ -98,7 +98,7 @@ def request_location_message(user_id, message, keyboard_message):
         }
     )
     with urllib.request.urlopen(req) as resp:
-        jsonResponse = json.loads(resp.read())
+        jsonResponse = json.loads(resp.read().decode('utf-8'))
         if jsonResponse["ok"]:
             return jsonResponse["result"]
         else:
