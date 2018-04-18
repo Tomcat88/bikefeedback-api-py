@@ -37,7 +37,8 @@ def get_updates():
 def send_simple_message(user_id, message):
     body = {
         'chat_id': user_id,
-        'text': message
+        'text': message,
+        'parse_mode': 'Markdown'
     }
     req = urllib.request.Request(
         method='POST',

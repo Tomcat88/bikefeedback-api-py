@@ -4,7 +4,6 @@ import os
 import re
 
 from utils import timed_cache
-from collections import namedtuple
 
 DEVELOPMENT = os.getenv('BIKE_FEEDBACK_DEV', "True") == "True"
 page_name = os.environ.get('BIKE_PAGE')

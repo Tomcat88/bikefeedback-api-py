@@ -25,7 +25,9 @@ def process(update):
     message = update["message"]
     if "reply_to_message" in message:
         if message["reply_to_message"]["message_id"] in waiting_reply:
-            waiting_reply[message["reply_to_message"]["message_id"]](update)
+            funcs = waiting_reply[message["reply_to_message"]["message_id"]]
+            for f in funcs:
+                f(update)
         else:
             log.error("Not waiting for message %s" % message["message_id"])
     else:
@@ -45,7 +47,25 @@ def handle_location_message(update):
         users_locations[user_id] = location
 
 
-def process_start(update):
+def send_nearest(update):
+    user_id = update["message"]["from"]["id"]
+    stations = scraper.scrape_bikes()
+    nearest_station = utils.find_nearest(
+        list(stations.values()),
+        users_locations[user_id]["latitude"],
+        users_locations[user_id]["longitude"]
+    )
+    tc.send_simple_message(user_id, str(nearest_station))
+    tc.send_location(
+        user_id,
+        {
+            'lat': nearest_station.lat,
+            'lng': nearest_station.lng
+        }
+    )
+
+
+def process_start(update, cont_function=lambda x: x):
     log.info("Processing start...")
     resp = tc.request_location_message(update["message"]["from"]["id"],
                                        "Ho bisogno della tua posizione " +
@@ -53,29 +73,17 @@ def process_start(update):
                                        "sono piu' vicine",
                                        "Condividi la tua posizione")
     log.info("Setting waiting reply for message %d" % resp["message_id"])
-    waiting_reply[resp["message_id"]] = handle_location_message
+    waiting_reply[resp["message_id"]] = [handle_location_message,
+                                         cont_function]
 
 
 def process_nearest(update):
     user_id = update["message"]["from"]["id"]
     if user_id in users_locations:
-        stations = scraper.scrape_bikes()
-        nearest_station = utils.find_nearest(
-            list(stations.values()),
-            users_locations[user_id]["latitude"],
-            users_locations[user_id]["longitude"]
-        )
-        tc.send_simple_message(user_id, str(nearest_station))
-        tc.send_location(
-            user_id,
-            {
-                'lat': nearest_station.lat,
-                'lng': nearest_station.lng
-            }
-        )
+        send_nearest(update)
     else:
         log.info(users_locations)
-        process_start(update)
+        process_start(update, send_nearest)
 
 
 def unknown_command(update):
