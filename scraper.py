@@ -32,13 +32,11 @@ class Station(object):
 
     def __str__(self):
         return '''(%s) -- *%s*
-
-        Bikes: *%d*
-
-        eBikes: *%d*
-
-        Racks: *%d*''' % (self.code, self.name, self.bikes,
-                          self.ebikes, self.racks)
+        bikes: *%d* - eBikes: *%d* - racks: *%d*''' % (self.code,
+                                                       self.name,
+                                                       self.bikes,
+                                                       self.ebikes,
+                                                       self.racks)
 
 
 def get_bike_page():

@@ -36,4 +36,7 @@ def fetch_updates():
 
 if __name__ == "__main__":
     configure_logger()
-    configure_scheduler()
+    try:
+        configure_scheduler()
+    except Exception as e:
+        log.error("Error while executing scheduler periodic %s", str(e))
